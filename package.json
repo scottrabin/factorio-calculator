@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "yarn run build && electron ./dist/main.js",
+    "start:dev": "concurrently \"yarn run start\" \"tsc -w\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,6 +15,7 @@
   "author": "Scott Rabin <scottrabin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "concurrently": "^3.5.1",
     "electron": "1.8.3",
     "tslint": "^5.9.1",
     "typescript": "^2.7.2"

@@ -78,6 +78,7 @@ export function getFactorioData(factorioPath: string, factorioModPath: string): 
 
 function processRawFactorioData(data: any): IFactorioData {
     const obj: IRawFactorioData = JSON.parse(data);
+    (window as any).rawData = obj;
 
     const result: IFactorioData = {
         items: {},

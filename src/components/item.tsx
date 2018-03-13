@@ -1,18 +1,20 @@
 import * as React from "react";
 
-import { Configuration } from "../models/config";
 import { Item as ItemModel } from "../models/item";
 import { ItemIcon } from "./item-icon";
 
 interface IItemProps {
-    config: Configuration;
+    paths: {
+        base: string;
+        mods: string;
+    };
     item: ItemModel;
 }
 
 export const Item: React.StatelessComponent<IItemProps> = (props) => {
     return (
         <div className="item">
-            <ItemIcon item={props.item} config={props.config} />
+            <ItemIcon item={props.item} paths={props.paths} />
             <span className="item-name">{props.item.name}</span>
         </div>
     );

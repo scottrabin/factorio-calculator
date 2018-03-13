@@ -1,22 +1,25 @@
 import React from "react";
+import { connect } from "react-redux";
 
-import { Item } from "./components/item";
+import { ItemList } from "./components/item-list";
 import { getFactorioData } from "./data-loader";
-import { Configuration } from "./models/config";
-import { Item as ItemModel } from "./models/item";
+import { Item } from "./models/item";
 import { Recipe } from "./models/recipe";
+import { AppState } from "./store";
 
-const basePath = "/Users/scottrabin/Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/";
+interface ApplicationProps {
+    paths: AppState["config"]["paths"];
+}
 
-interface IApplicationState {
+interface ApplicationState {
     data: {
-        items: { [id: string]: ItemModel; };
+        items: { [id: string]: Item; };
         recipes: { [id: string]: Recipe; };
     };
 }
 
-export class Application extends React.Component<{}, IApplicationState> {
-    constructor(props: {}) {
+class ApplicationComponent extends React.Component<ApplicationProps, ApplicationState> {
+    constructor(props: ApplicationProps) {
         super(props);
         this.state = {
             data: {
@@ -26,28 +29,26 @@ export class Application extends React.Component<{}, IApplicationState> {
         };
     }
 
-    public render() {
-        const ids = Object.keys(this.state.data.items);
-
-        return [
-            <h1>Hello from React!</h1>,
-        ].concat(ids.map((id) => {
-            return (
-                <Item config={this.getConfig()} item={this.state.data.items[id]} />
-            );
-        }));
-    }
-
     public async componentWillMount() {
-        const data = await getFactorioData(basePath, "");
+        const data = await getFactorioData(this.props.paths.base, "");
         (window as any).data = data;
         this.setState({ data });
     }
 
-    private getConfig(): Configuration {
-        return {
-            factorioBasePath: basePath,
-            factorioModsPath: "",
-        };
+    public render() {
+        return (
+            <div>
+                <h1>Hello from React!</h1>
+                <ItemList items={Object.keys(this.state.data.items).map((k) => this.state.data.items[k])} />
+            </div>
+        );
     }
 }
+
+export const Application = connect(
+    (state: AppState) => {
+        return {
+            paths: state.config.paths,
+        };
+    },
+)(ApplicationComponent);

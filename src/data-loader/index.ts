@@ -1,26 +1,16 @@
 import * as child_process from "child_process";
 import * as path from "path";
 
-interface Item {
-    id: string;
-    name: string;
-    icon: string;
-}
-
-interface Ingredient {
-    item: Item;
-    quantity: number;
-}
+import { Ingredient } from "../models/ingredient";
+import { Item } from "../models/item";
+import { Recipe } from "../models/recipe";
 
 interface IFactorioData {
     items: {
         [id: string]: Item;
     };
     recipes: {
-        [id: string]: {
-            result: Item;
-            ingredients: Ingredient[];
-        };
+        [id: string]: Recipe;
     };
 }
 
@@ -95,17 +85,18 @@ function processRawFactorioData(data: any): IFactorioData {
     };
 
     for (const id of Object.keys(obj.raw.item)) {
-        result.items[id] = {
-            icon: obj.raw.item[id].icon,
+        result.items[id] = new Item(
             id,
-            name: obj.raw.item[id].name,
-        };
+            obj.raw.item[id].icon,
+            obj.raw.item[id].name,
+        );
     }
     for (const id of Object.keys(obj.raw.recipe)) {
-        result.recipes[id] = {
-            ingredients: extractIngredients(result.items, obj.raw.recipe[id]),
-            result: result.items[id],
-        };
+        result.recipes[id] = new Recipe(
+            obj.raw.recipe[id].name,
+            [result.items[id]],
+            extractIngredients(result.items, obj.raw.recipe[id]),
+        );
     }
 
     return result;
